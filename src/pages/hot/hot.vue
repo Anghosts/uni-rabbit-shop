@@ -120,7 +120,7 @@ onLoad((query) => {
         </navigator>
       </view>
       <view class="loading-text">
-        {{ subType.status === 'loading' ? '正在加载...' : '没有更多数据~' }}
+        {{ subType.status === 'end' ? '没有更多数据~' : '正在加载...' }}
       </view>
     </scroll-view>
   </view>

@@ -6,7 +6,7 @@ import { request } from '@/utils/request'
  * 首页-广告区域
  * @param distributionSite 广告区域展示位置: 1 为首页（默认值）, 2 为商品分类页
  */
-export const reqGetHomeBanner = (distributionSite = 1) => {
+export const reqGetBanner = (distributionSite = 1) => {
   return request<BannerItem[]>({
     method: 'GET',
     url: '/home/banner',

@@ -3,7 +3,7 @@ import type { BannerItem, CategoryItem, HotItem } from '@/types/home'
 import type { BaseGuessInstance } from '@/types/component'
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
-import { reqGetHomeBanner, reqGetHomeCategory, reqGetHomeHot } from '@/services/home'
+import { reqGetBanner, reqGetHomeCategory, reqGetHomeHot } from '@/services/home'
 import CustomNavBar from './components/CustomNavBar.vue'
 import CategoryPanel from './components/CategoryPanel.vue'
 import HotPanel from './components/HotPanel.vue'
@@ -20,7 +20,7 @@ const onScrolltolower = () => {
 // 获取轮播图数据
 const bannerList = ref<BannerItem[]>([])
 const getHomeBanner = async () => {
-  let { result } = await reqGetHomeBanner(1)
+  let { result } = await reqGetBanner(1)
   bannerList.value = result
 }
 // 获取前台分类数据

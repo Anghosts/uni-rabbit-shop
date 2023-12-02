@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { BannerItem, CategoryItem, HotItem } from '@/types/home'
-import type { BaseGuessInstance } from '@/types/component'
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { reqGetBanner, reqGetHomeCategory, reqGetHomeHot } from '@/services/home'
@@ -8,14 +7,10 @@ import CustomNavBar from './components/CustomNavBar.vue'
 import CategoryPanel from './components/CategoryPanel.vue'
 import HotPanel from './components/HotPanel.vue'
 import PageSkeleton from './components/PageSkeleton.vue'
+import { useGuessList } from '@/hooks/index'
 
-// 猜你喜欢组件实例
-const guessRef = ref<BaseGuessInstance>()
-
-// 滚动触底事件
-const onScrolltolower = () => {
-  guessRef.value?.getMore()
-}
+// 猜你喜欢数据加载
+const { guessRef, onScrolltolower } = useGuessList()
 
 // 获取轮播图数据
 const bannerList = ref<BannerItem[]>([])

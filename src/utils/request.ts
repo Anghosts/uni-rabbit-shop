@@ -14,12 +14,12 @@ const interceptor = {
       options.url = BASE_URL + options.url
     }
     // 获取token
-    const { token } = memberStore.profile
+    const profile = memberStore.profile
     // 设置请求头
     options.header = {
       ...options.header,
       'source-client': 'miniapp',
-      Authoriztion: token,
+      Authoriztion: profile?.token,
     }
   },
 }

@@ -14,7 +14,7 @@ const orderTypes = [
 // 用户信息
 const memberStore = useMemberStore()
 // 猜你喜欢数据加载
-const { onScrolltolower } = useGuessList()
+const { guessRef, onScrolltolower } = useGuessList()
 </script>
 
 <template>

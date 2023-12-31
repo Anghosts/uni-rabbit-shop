@@ -19,7 +19,7 @@ const interceptor = {
     options.header = {
       ...options.header,
       'source-client': 'miniapp',
-      Authoriztion: profile?.token,
+      Authorization: profile?.token,
     }
   },
 }

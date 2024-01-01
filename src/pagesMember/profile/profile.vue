@@ -64,7 +64,6 @@ const onFullLocationChange: UniHelper.RegionPickerOnChange = (e) => {
 // 保存修改的用户信息
 const onSubmit = async () => {
   const { nickname, gender, birthday, profession } = profile.value
-  console.log(fullLocationCode)
   const { result } = await reqMemberProfile({
     nickname,
     gender,

@@ -17,7 +17,6 @@ const onDeleteAddress = (id: string) => {
   uni.showModal({
     content: '确认删除地址？',
     success: async (success) => {
-      console.log(success)
       if (success.confirm) {
         await reqDeleteMemberAddressById(id)
         getMemberAddress()

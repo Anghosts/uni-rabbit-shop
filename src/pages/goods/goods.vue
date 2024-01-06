@@ -121,6 +121,11 @@ onLoad(() => {
     v-model="skuVisible"
     :localdata="localData"
     :mode="skuMode"
+    :actived-style="{
+      color: '#27BA9B',
+      borderColor: '#27BA9B',
+      backgroundColor: '#E9F8F5',
+    }"
     add-cart-background-color="#FFA868"
     buy-now-background-color="#27BA9B"
     @add-cart="onAddCart"
@@ -229,7 +234,7 @@ onLoad(() => {
       <button class="icons-button" open-type="contact">
         <text class="icon-handset"></text>客服
       </button>
-      <navigator class="icons-button" url="/pages/cart/cart" open-type="switchTab">
+      <navigator class="icons-button" url="/pages/cart/cart-sub">
         <text class="icon-cart"></text>购物车
       </navigator>
     </view>
@@ -240,14 +245,16 @@ onLoad(() => {
   </view>
 </template>
 
-<style lang="scss">
+<style>
 page {
   height: 100%;
   overflow: hidden;
   display: flex;
   flex-direction: column;
 }
+</style>
 
+<style lang="scss" scoped>
 .viewport {
   background-color: #f4f4f4;
 }

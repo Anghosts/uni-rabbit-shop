@@ -1,16 +1,18 @@
 <script lang="ts" setup>
 import type { GoodsResult } from '@/types/goods'
+import type { AddressItem } from '@/types/address'
 import type {
   SkuPopupLocaldata,
   SkuPopupInstanceType,
   SkuPopupEvent,
 } from '@/components/vk-data-goods-sku-popup/vk-data-goods-sku-popup'
 import { ref, computed } from 'vue'
-import { onLoad } from '@dcloudio/uni-app'
+import { onLoad, onShow } from '@dcloudio/uni-app'
 import { reqGetGoodsById } from '@/services/goods'
 import { reqAddMemberCart } from '@/services/cart'
 import AddressPanel from './components/AddressPanel.vue'
 import ServicePanel from './components/ServicePanel.vue'
+import { useAddressStore } from '@/stores/modules/address'
 
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
@@ -37,7 +39,7 @@ const localData = ref({} as SkuPopupLocaldata)
 const skuPopupRef = ref<SkuPopupInstanceType>()
 
 // 计算被选中的值
-const selectValue = computed(() => {
+const selectAttrValue = computed(() => {
   return skuPopupRef.value?.selectArr?.join(' ').trim() || '请选择商品规格'
 })
 
@@ -82,6 +84,32 @@ const onAddCart = async (e: SkuPopupEvent) => {
   skuVisible.value = false
 }
 
+const addressStore = useAddressStore()
+// 收货地址
+const selectedAddress = ref<AddressItem>()
+// 收集收货地址
+const onSelectedAddress = (val: AddressItem) => {
+  selectedAddress.value = val
+  addressStore.updateSelectedAddress(val)
+  popup.value?.close()
+}
+// 计算收货地址的值
+const selectAddressValue = computed(() => {
+  if (addressStore.selectedAddress) {
+    const { fullLocation, address } = addressStore.selectedAddress
+    return `${fullLocation} ${address}`
+  } else {
+    return '请选择收货地址'
+  }
+})
+// 立即购买
+const onBuyNow = (e: SkuPopupEvent) => {
+  const addressId = selectedAddress.value?.id || ''
+  uni.navigateTo({
+    url: `/pagesOrder/create/create?skuId=${e._id}&count=${e.buy_num}&addressId=${addressId}`,
+  })
+}
+
 // 当前轮播图的下标
 const swiperCurrent = ref(0)
 // 轮播图变化
@@ -112,6 +140,11 @@ const openPopup = (name: typeof popupName.value) => {
 onLoad(() => {
   getGoodsData()
 })
+
+const addressRef = ref()
+onShow(() => {
+  addressRef.value?.getData()
+})
 </script>
 
 <template>
@@ -129,6 +162,7 @@ onLoad(() => {
     add-cart-background-color="#FFA868"
     buy-now-background-color="#27BA9B"
     @add-cart="onAddCart"
+    @buy-now="onBuyNow"
   />
   <scroll-view scroll-y class="viewport">
     <!-- 基本信息 -->
@@ -161,11 +195,11 @@ onLoad(() => {
       <view class="action">
         <view class="item arrow" @tap="handleOpenSkuPopup(SkuMode.Both)">
           <text class="label">选择</text>
-          <text class="text ellipsis">{{ selectValue }}</text>
+          <text class="text ellipsis">{{ selectAttrValue }}</text>
         </view>
         <view @tap="openPopup('address')" class="item arrow">
           <text class="label">送至</text>
-          <text class="text ellipsis"> 请选择收获地址 </text>
+          <text class="text ellipsis">{{ selectAddressValue }}</text>
         </view>
         <view @tap="openPopup('service')" class="item arrow">
           <text class="label">服务</text>
@@ -173,8 +207,13 @@ onLoad(() => {
         </view>
       </view>
       <uni-popup ref="popup" type="bottom" background-color="#fff">
-        <AddressPanel v-if="popupName === 'address'" @close="popup?.close()" />
-        <ServicePanel v-if="popupName === 'service'" @close="popup?.close()" />
+        <AddressPanel
+          ref="addressRef"
+          v-show="popupName === 'address'"
+          @close="popup?.close()"
+          @confirm="onSelectedAddress"
+        />
+        <ServicePanel v-show="popupName === 'service'" @close="popup?.close()" />
       </uni-popup>
     </view>
 

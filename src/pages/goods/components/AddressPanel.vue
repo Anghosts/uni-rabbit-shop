@@ -1,7 +1,47 @@
 <script setup lang="ts">
-defineEmits<{
+import type { AddressItem } from '@/types/address'
+import { ref } from 'vue'
+import { reqGetMemberAddress } from '@/services/address'
+import { useAddressStore } from '@/stores/modules/address'
+
+const emits = defineEmits<{
   (event: 'close'): void
 }>()
+
+const addressStore = useAddressStore()
+// 地址列表
+const addressList = ref<AddressItem[]>()
+// 获取地址列表
+const getMemberAddress = async () => {
+  let { result } = await reqGetMemberAddress()
+  addressList.value = result
+
+  checkedAddress.value = addressStore.selectedAddress
+}
+// 选中的地址
+const checkedAddress = ref(addressStore.selectedAddress)
+// 选中地址
+const onCheckedChange = (val: AddressItem) => {
+  checkedAddress.value = val
+}
+
+// 新建地址
+const onAddAddress = () => {
+  uni.navigateTo({ url: '/pagesMember/address-form/address-form' })
+  emits('close')
+}
+
+// 确定
+const onConfirm = () => {
+  addressStore.updateSelectedAddress(checkedAddress.value!)
+  emits('close')
+}
+
+getMemberAddress()
+
+defineExpose({
+  getData: getMemberAddress,
+})
 </script>
 
 <template>
@@ -12,25 +52,15 @@ defineEmits<{
     <view class="title">配送至</view>
     <!-- 内容 -->
     <view class="content">
-      <view class="item">
-        <view class="user">李明 13824686868</view>
-        <view class="address">北京市顺义区后沙峪地区安平北街6号院</view>
-        <text class="icon icon-checked"></text>
-      </view>
-      <view class="item">
-        <view class="user">王东 13824686868</view>
-        <view class="address">北京市顺义区后沙峪地区安平北街6号院</view>
-        <text class="icon icon-ring"></text>
-      </view>
-      <view class="item">
-        <view class="user">张三 13824686868</view>
-        <view class="address">北京市朝阳区孙河安平北街6号院</view>
-        <text class="icon icon-ring"></text>
+      <view v-for="item in addressList" :key="item.id" class="item" @tap="onCheckedChange(item)">
+        <view class="user">{{ item.receiver }} {{ item.contact }}</view>
+        <view class="address">{{ item.fullLocation }} {{ item.address }}</view>
+        <text class="icon" :class="{ 'icon-checked': checkedAddress?.id === item.id }"></text>
       </view>
     </view>
     <view class="footer">
-      <view class="button primary"> 新建地址 </view>
-      <view v-if="false" class="button primary">确定</view>
+      <view class="button primary" @tap="onAddAddress"> 新建地址 </view>
+      <view v-if="addressList?.length" class="button primary" @tap="onConfirm">确定</view>
     </view>
   </view>
 </template>

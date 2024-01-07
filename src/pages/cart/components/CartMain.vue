@@ -93,7 +93,7 @@ const onPayment = () => {
   if (checkedTotalCount.value === 0) {
     uni.showToast({ title: '请选择商品', icon: 'none' })
   } else {
-    //
+    uni.navigateTo({ url: '/pagesOrder/create/create' })
   }
 }
 

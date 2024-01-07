@@ -3,6 +3,11 @@ import type { AddressItem } from '@/types/address'
 import { ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { reqGetMemberAddress, reqDeleteMemberAddressById } from '@/services/address'
+import { useAddressStore } from '@/stores/modules/address'
+
+const query = defineProps<{
+  from?: string
+}>()
 
 // 地址列表
 const addressList = ref<AddressItem[]>()
@@ -25,6 +30,19 @@ const onDeleteAddress = (id: string) => {
   })
 }
 
+const addressStore = useAddressStore()
+// 选择地址
+const onSelectedAddress = (val: AddressItem) => {
+  if (query.from === 'order') {
+    /* 从填写订单页面进入: 保存选中的地址，并返回 */
+    addressStore.updateSelectedAddress(val)
+    uni.navigateBack()
+  } else {
+    /* 从设置页面进入: 跳转地址编辑页 */
+    uni.navigateTo({ url: `/pagesMember/address-form/address-form?id=${val.id}` })
+  }
+}
+
 onShow(() => {
   getMemberAddress()
 })
@@ -37,7 +55,12 @@ onShow(() => {
       <view v-if="true" class="address">
         <uni-swipe-action class="address-list">
           <!-- 收货地址项 -->
-          <uni-swipe-action-item v-for="item in addressList" :key="item.id" class="item">
+          <uni-swipe-action-item
+            v-for="item in addressList"
+            :key="item.id"
+            class="item"
+            @tap="onSelectedAddress(item)"
+          >
             <view class="item-content">
               <view class="user">
                 <text class="receiver">{{ item.receiver }}</text>
@@ -49,12 +72,13 @@ onShow(() => {
                 class="edit"
                 hover-class="none"
                 :url="`/pagesMember/address-form/address-form?id=${item.id}`"
+                @tap.stop
               >
                 修改
               </navigator>
             </view>
             <template #right>
-              <button class="delete-button" @tap="onDeleteAddress(item.id)">删除</button>
+              <button class="delete-button" @tap.stop="onDeleteAddress(item.id)">删除</button>
             </template>
           </uni-swipe-action-item>
         </uni-swipe-action>

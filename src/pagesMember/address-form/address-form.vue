@@ -6,10 +6,11 @@ import {
   reqEditMemberAddressById,
 } from '@/services/address'
 import { onLoad } from '@dcloudio/uni-app'
+import { useAddressStore } from '@/stores/modules/address'
 
 // 表单数据
 const form = ref({
-  id: undefined, // 地址ID
+  id: '', // 地址ID
   receiver: '', // 收货人
   contact: '', // 联系方式
   fullLocation: '', // 省市区(前端展示)
@@ -69,6 +70,7 @@ const getMemberAddressById = async () => {
   }
 }
 
+const addressStore = useAddressStore()
 // 保存
 const onSubmit = () => {
   formRef.value
@@ -82,10 +84,12 @@ const onSubmit = () => {
         uni.showToast({ icon: 'success', title: '修改成功' })
       } else {
         // 新增地址
-        await reqAddMemberAddress(form.value)
+        let {
+          result: { id },
+        } = await reqAddMemberAddress(form.value)
         uni.showToast({ icon: 'success', title: '添加成功' })
+        addressStore.updateSelectedAddress(Object.assign(form.value, { id }))
       }
-
       setTimeout(() => {
         uni.navigateBack()
       }, 500)
